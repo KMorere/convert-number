@@ -3,6 +3,9 @@ package def;
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NumberToLetter_fr {
 	
@@ -55,25 +58,28 @@ public class NumberToLetter_fr {
 	private static final int MIN_VALUE = 1;
 	
 	public static void main(String[] args) {
-		System.out.printf("Entrez un nombre entier de %d à %d : "
+		System.out.printf("Entrez un nombre entre %d et %d, "
+				+ "la valeur décimale étant séparé par ',' : "
 				, (MIN_VALUE-1), (MAX_VALUE+1));
 		
 		tryConvert();
 	}
 	
+	/// Input verification to use a valid number.
 	private static void tryConvert() {
 		Scanner scan = new Scanner(System.in);
 		
-		if (scan.hasNextInt()) {
-			int input = scan.nextInt();
+		if (scan.hasNextFloat()) {
+			float input = scan.nextFloat();
 			
 			if (input >= 0 && input < 1000) {
-				String[] inputStr = Integer.toString(input).split("");
+				String result = (input % 1 == 0) ? String.valueOf((int) input) : String.valueOf(input);
+				String[] inputStr = result.split("");
 				
-				convertNumber(inputStr);
+				getDecimal(inputStr);
 			}
 			else {
-				System.out.printf("Veuillez utilisez un nombre entier de %d à %d : "
+				System.out.printf("Veuillez utilisez un nombre entier entre %d et %d : "
 						, (MIN_VALUE-1), (MAX_VALUE+1));
 				tryConvert();
 			}
@@ -87,10 +93,43 @@ public class NumberToLetter_fr {
 	}
 	
 	/**
+	 * Check if the number to convert has a decimal value,
+	 * And split whole numbers and decimals.
+	 * @param number The current number to convert.
+	 */
+	private static void getDecimal(String[] number) {
+		ArrayList<String> decimals = new ArrayList<String>(Arrays.asList(number));
+		ArrayList<String> num = new ArrayList<String>();
+		boolean isDecimal = false;
+		
+		for (String n : number) {
+			if (n.equals(".")) {
+				decimals.remove(n);
+				isDecimal = true;
+				break;
+			}
+			else {
+				decimals.remove(n);
+				num.add(n);
+			}
+		}
+		
+		String result = "";
+		System.out.print(convertNumber(num.toArray(new String[num.size()])));
+		
+		if (isDecimal) {
+			System.out.print("virgule ");
+			System.out.println(convertNumber(decimals.toArray(new String[decimals.size()])));
+		}
+		
+		System.out.println(result);
+	}
+	
+	/**
 	 * Convert the given number from digits to alphanumeric.
 	 * @param number The number to convert with each digit separated.
 	 */
-	private static void convertNumber(String[] number) {
+	private static String convertNumber(String[] number) {
 		String temp = "";
 		
 		for (int i = 0; i < 1; i++) {
@@ -107,7 +146,7 @@ public class NumberToLetter_fr {
 			}
 		}
 
-		System.out.println(temp);
+		return temp;
 	}
 	
 	/**
@@ -182,7 +221,7 @@ public class NumberToLetter_fr {
 		String number = num[index];
 		
 		int nb = convertInt(number);
-		temp += (nb >= 0) ? ones[nb] : "";
+		temp += (nb >= 0) ? ones[nb] + " " : "";
 		
 		return temp;
 	}
